@@ -76,7 +76,21 @@ if st.button("Submit Questionnaire & Calculate Risk", type="primary"):
     if smoking == "Current Smoker": risk_score += 2
     if family_history: risk_score += 2
 
-    st.write("---")
-    if high_risk_flag or risk_score >= 8: st.error("### Prediction: HIGH RISK 🔴")
-    elif risk_score >= 4: st.warning("### Prediction: INTERMEDIARY RISK 🟡")
-    else: st.success("### Prediction: LOW RISK 🟢")
+# --- PREDICTION LOGIC ---
+if st.button("Submit Questionnaire & Calculate Risk", type="primary"):
+    # Scoring Logic
+    sys_bp = 150 if "Stage 2" in bp_selection else (135 if "Stage 1" in bp_selection else 115)
+    cholesterol = 250 if "High" in chol_selection else (220 if "Borderline" in chol_selection else 170)
+    hdl = 35 if "Low" in hdl_selection else (48 if "Normal" in hdl_selection else 65)
+    blood_sugar = 140 if "Diabetic" in sugar_selection else (110 if "Pre-Diabetes" in sugar_selection else 85)
+    
+    risk_score = (1 if age > 40 else 0) + (2 if bmi > 25 else 0) + (2 if sys_bp > 130 else 0) + (1 if cholesterol > 200 else 0)
+    high_risk_flag = (sys_bp >= 160 or dia_bp >= 100) or ("Diabetic" in sugar_selection and diabetes)
+    
+    # Trigger Dialog based on risk
+    if high_risk_flag or risk_score >= 8:
+        show_result("HIGH RISK", "🔴", "Your profile shows critical indicators that require immediate medical attention.")
+    elif risk_score >= 4:
+        show_result("INTERMEDIARY RISK", "🟡", "Several risk factors identified. We recommend scheduling a screening with your doctor.")
+    else:
+        show_result("LOW RISK", "🟢", "Your health indicators currently align with lower-risk parameters.")
