@@ -16,7 +16,7 @@ def show_result(risk_label, color_emoji, explanation):
 # 3. Web App UI Header
 st.title("🫀 Cardiovascular Disease Risk Assessment")
 st.caption("MIA5100Z Machine Learning Project Demo")
-st.markdown("<small><i>ACADEMIC PROOF OF CONCEPT: Form inputs use everyday language.</i></small>", unsafe_allow_html=True)
+st.markdown("<small><i>PROOF OF CONCEPT ONLY</i></small>", unsafe_allow_html=True)
 st.write("---")
 
 # --- INPUTS ---
