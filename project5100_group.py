@@ -3,10 +3,7 @@
 Data loading, initial exploration, and data cleaning of the CVD dataset (shape, structure, CVD Score/Risk Level overview, Blood Pressure vs Systolic/Diastolic redundancy).
 
 ---
-"""
 
-#from google.colab import drive
-#drive.mount('/content/drive')
 
 import pandas as pd
 # read the csv file
