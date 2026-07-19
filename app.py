@@ -9,14 +9,25 @@ st.set_page_config(
 )
 
 # 2. Web App UI Header
-st.title("🫀 Cardiovascular Disease Risk Assessment")
-st.caption("MIA5100Z Machine Learning Project Demo")
+st.title("Cardiovascular Disease Risk Assessment Project")
+st.caption("MIA5100Z - Foundations & Applications of Machine Learning")
 
 # Small warning as requested
 st.markdown("<small><i>ACADEMIC PROOF OF CONCEPT: Form inputs use everyday language.</i></small>", unsafe_allow_html=True)
 
 st.write("---")
 st.write("### 📝 Quick Health Questionnaire")
+
+st.markdown("""
+    <style>
+    /* Increase size of question labels */
+    div[data-testid="stWidget"] label p {
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
+        color: #000000 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # --- SECTION 1: GENERAL INFO ---
 age = st.number_input("What is your Age?", min_value=1, max_value=120, value=25)
