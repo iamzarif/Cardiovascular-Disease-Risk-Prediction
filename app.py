@@ -17,8 +17,7 @@ st.markdown("<small><i>ACADEMIC PROOF OF CONCEPT: Form inputs use everyday langu
 
 st.write("---")
 
-# --- SECTION 1: GENERAL INFO ---
-st.write("### 👤 Step 1: General Information")
+# --- INPUTS ---
 age = st.number_input("What is your Age?", min_value=1, max_value=120, value=25)
 sex = st.selectbox("What is your Biological Sex?", ["Male", "Female"])
 
@@ -27,13 +26,12 @@ with col_ft: ft = st.number_input("Height (ft)", min_value=3, max_value=8, value
 with col_in: inches = st.number_input("Height (in)", min_value=0, max_value=11, value=7)
 with col_w: weight_kg = st.number_input("Weight (kg)", min_value=10.0, max_value=400.0, value=70.0, step=0.1)
 
-# BMI calculation
+# BMI Logic
 height_m = ((ft * 12) + inches) * 0.0254
 bmi = weight_kg / (height_m ** 2) if height_m > 0 else 0.0
 st.write(f"**Computed BMI:** {bmi:.1f}")
 
-# --- SECTION 2: CLINICAL METRICS ---
-st.write("### 🩺 Step 2: Clinical Metrics")
+# BP Logic - Defined BEFORE button
 bp_selection = st.selectbox("Typical Blood Pressure:", [
     "Normal (Below 120/80 mmHg)",
     "Elevated (Systolic 120-129)",
@@ -41,26 +39,16 @@ bp_selection = st.selectbox("Typical Blood Pressure:", [
     "High Stage 2 (Systolic 140+ or Diastolic 90+)"
 ])
 
-chol_selection = st.selectbox("Typical Total Cholesterol:", [
-    "Normal (Below 200 mg/dL)",
-    "Borderline High (200–239 mg/dL)",
-    "High (240 mg/dL or above)"
-])
+if "Normal" in bp_selection: sys_bp, dia_bp = 115, 75
+elif "Elevated" in bp_selection: sys_bp, dia_bp = 125, 78
+elif "Stage 1" in bp_selection: sys_bp, dia_bp = 135, 85
+else: sys_bp, dia_bp = 150, 95
 
-hdl_selection = st.selectbox("Typical HDL ('Good') Cholesterol:", [
-    "Optimal (60+ mg/dL)",
-    "Normal (40-59 mg/dL)",
-    "Low (Below 40 mg/dL)"
-])
+# Other inputs
+chol_selection = st.selectbox("Typical Total Cholesterol:", ["Normal (<200)", "Borderline (200–239)", "High (240+)"])
+hdl_selection = st.selectbox("Typical HDL ('Good') Cholesterol:", ["Optimal (60+)", "Normal (40-59)", "Low (<40)"])
+sugar_selection = st.selectbox("Typical Fasting Blood Sugar:", ["Normal (<100)", "Pre-Diabetes (100–125)", "Diabetic (126+)"])
 
-sugar_selection = st.selectbox("Typical Fasting Blood Sugar:", [
-    "Normal (Below 100 mg/dL)",
-    "Pre-Diabetes (100–125 mg/dL)",
-    "Diabetic Profile (126 mg/dL or above)"
-])
-
-# --- SECTION 3: LIFESTYLE ---
-st.write("### 🚬 Step 3: Lifestyle & History")
 smoking = st.selectbox("Smoking Status:", ["Never Smoked", "Former Smoker", "Current Smoker"])
 diabetes = st.checkbox("Clinically diagnosed with Diabetes?")
 family_history = st.checkbox("Family history of heart disease?")
