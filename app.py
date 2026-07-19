@@ -8,13 +8,44 @@ st.set_page_config(
     layout="centered"
 )
 
-# 2. Web App Header
-st.title("🫀 Cardiovascular Disease Risk Assessment")
-st.caption("MIA5100Z Foundations and Applications of Machine Learning — Live Presentation Demo")
-st.warning("⚠️ ACADEMIC PROOF OF CONCEPT ONLY. Form inputs use everyday language for demonstration purposes.")
+# 2. Custom Styling to force white background and make text larger
+st.markdown("""
+    <style>
+    /* Force main app background to white */
+    .stApp {
+        background-color: #FFFFFF !important;
+        color: #1E1E1E !important;
+    }
+    
+    /* Enlarge paragraph text and normal text entries */
+    p, span, label, .stSelectbox p, .stNumberInput p {
+        font-size: 1.2rem !important;
+        font-weight: 500 !important;
+        color: #1E1E1E !important;
+    }
+    
+    /* Enlarge specific question labels above input fields */
+    .stWidget label p {
+        font-size: 1.3rem !important;
+        font-weight: 600 !important;
+        color: #000000 !important;
+    }
+    
+    /* Make block subheaders stand out */
+    h3 {
+        font-size: 1.8rem !important;
+        color: #111111 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 3. Web App Header
+st.title("Cardiovascular Disease Risk Assessment Project")
+st.caption("MIA5100Z Foundations and Applications of Machine Learning")
+st.warning("ACADEMIC PROOF OF CONCEPT ONLY. Form inputs use everyday language for demonstration purposes.")
 
 st.write("### 📝 Quick Health Questionnaire")
-st.write("Fill out the questions below based on what you know. Estimates are perfectly fine!")
+st.write("Fill out the questions below based on your best estimate. Submitting calculates your clinical tree score profile.")
 
 # --- SECTION 1: BASIC DEMOGRAPHICS & HEIGHT/WEIGHT ---
 st.subheader("👤 Step 1: General Information")
@@ -27,14 +58,11 @@ with col_ft:
 with col_in:
     inches = st.number_input("Height: Inches", min_value=0, max_value=11, value=7)
 with col_w:
-    weight_lbs = st.number_input("What is your Weight (in lbs)?", min_value=30.0, max_value=700.0, value=150.0, step=0.1)
+    weight_kg = st.number_input("What is your Weight (in kg)?", min_value=10.0, max_value=400.0, value=70.0, step=0.1)
 
-# Under-the-hood Conversions (Imperial to Metric for BMI calculation)
-# Total inches to meters conversion: inches * 0.0254
+# Under-the-hood Height Conversions to Metric for BMI calculation
 total_inches = (ft * 12) + inches
 height_m = total_inches * 0.0254
-# Lbs to kg conversion: lbs * 0.453592
-weight_kg = weight_lbs * 0.453592
 
 bmi = weight_kg / (height_m ** 2) if height_m > 0 else 0.0
 st.info(f"💡 **Auto-Calculated Feature:** Calculated Body Mass Index (BMI) = **{bmi:.1f}**")
@@ -80,7 +108,6 @@ sugar_selection = st.selectbox(
 )
 
 # Under-the-hood feature translations to recreate numerical logic approximations
-# Blood Pressure mapping
 if "Normal" in bp_selection:
     sys_bp, dia_bp = 115, 75
 elif "Elevated" in bp_selection:
@@ -90,17 +117,14 @@ elif "Stage 1" in bp_selection:
 else:
     sys_bp, dia_bp = 150, 95
 
-# Cholesterol mapping
 if "Normal" in chol_selection: cholesterol = 170
 elif "Borderline" in chol_selection: cholesterol = 220
 else: cholesterol = 250
 
-# HDL mapping
 if "Optimal" in hdl_selection: hdl = 65
 elif "Normal" in hdl_selection: hdl = 48
 else: hdl = 35
 
-# Fasting Blood Sugar mapping
 if "Normal" in sugar_selection: blood_sugar = 85
 elif "Pre-Diabetes" in sugar_selection: blood_sugar = 110
 else: blood_sugar = 140
