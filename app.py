@@ -11,8 +11,8 @@ except Exception as e:
     model = None
 
 # 2. Build the Web App UI
-st.title("🫀 CVD Risk Assessment (MIA5100Z)")
-st.warning("⚠️ ACADEMIC PROOF OF CONCEPT ONLY. Not for real medical diagnosis.")
+st.title("CVD Risk Assessment")
+st.warning("PROOF OF CONCEPT ONLY")
 
 st.write("Enter clinical data below to test the Random Forest model live:")
 
