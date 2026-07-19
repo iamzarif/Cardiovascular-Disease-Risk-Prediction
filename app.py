@@ -75,16 +75,44 @@ diabetes = st.checkbox("Clinically diagnosed with Diabetes?")
 family_history = st.checkbox("Family history of heart disease?")
 
 # --- PREDICTION LOGIC ---
-if st.button("Submit Questionnaire"):
-    # Scoring Logic
-    sys_bp = 150 if "Stage 2" in bp_selection else (135 if "Stage 1" in bp_selection else 115)
-    cholesterol = 250 if "High" in chol_selection else (220 if "Borderline" in chol_selection else 170)
-    hdl = 35 if "Low" in hdl_selection else (48 if "Normal" in hdl_selection else 65)
-    blood_sugar = 140 if "Diabetic" in sugar_selection else (110 if "Pre-Diabetes" in sugar_selection else 85)
+# 4. Handle Prediction Action
+if st.button("Submit Questionnaire & Calculate Risk", type="primary"):
+    risk_score = 0
+    high_risk_flag = False
     
-    risk_score = (1 if age > 40 else 0) + (2 if bmi > 25 else 0) + (2 if sys_bp > 130 else 0) + (1 if cholesterol > 200 else 0)
+    # Red Flag Check (Clinical Danger Zones)
+    # If any single critical metric is in a dangerous range, it overrides everything else
+    if sys_bp >= 160 or dia_bp >= 100: high_risk_flag = True  # Hypertension Stage 2+
+    if blood_sugar >= 126 and diabetes: high_risk_flag = True # Uncontrolled Diabetes
     
-    st.write("---")
-    if risk_score <= 3: st.success("### Prediction: LOW RISK 🟢")
-    elif risk_score <= 7: st.warning("### Prediction: INTERMEDIARY RISK 🟡")
-    else: st.error("### Prediction: HIGH RISK 🔴")
+    # Additive Scoring
+    if age > 55: risk_score += 2
+    elif age > 40: risk_score += 1
+        
+    if bmi >= 30: risk_score += 2
+    elif bmi >= 25: risk_score += 1
+        
+    if sys_bp >= 130 or dia_bp >= 80: risk_score += 2 # Elevated BP
+    
+    if cholesterol >= 240: risk_score += 2
+    elif cholesterol >= 200: risk_score += 1
+    
+    if hdl < 40: risk_score += 2 # Low HDL is a significant independent risk factor
+    
+    if blood_sugar >= 100: risk_score += 2
+        
+    if smoking == "Current Smoker": risk_score += 2
+    if family_history: risk_score += 2
+
+    st.divider()
+    
+    # Classification logic
+    if high_risk_flag or risk_score >= 8:
+        st.error("### Prediction: HIGH RISK 🔴")
+        st.write("Your profile shows critical indicators that require immediate medical attention.")
+    elif risk_score >= 4:
+        st.warning("### Prediction: INTERMEDIARY RISK 🟡")
+        st.write("Several risk factors identified. We recommend scheduling a screening with your doctor.")
+    else:
+        st.success("### Prediction: LOW RISK 🟢")
+        st.write("Your health indicators currently align with lower-risk parameters.")
