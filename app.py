@@ -76,6 +76,10 @@ if st.button("Submit Questionnaire & Calculate Risk", type="primary", key="submi
     if family_history: risk_score += 2
 
     st.write("---")
-    if high_risk_flag or risk_score >= 8: st.error("### Prediction: HIGH RISK 🔴")
-    elif risk_score >= 4: st.warning("### Prediction: INTERMEDIARY RISK 🟡")
-    else: st.success("### Prediction: LOW RISK 🟢")
+# Trigger Dialog based on risk
+    if high_risk_flag or risk_score >= 8:
+        show_result("HIGH RISK", "🔴", "Your profile shows critical indicators that require immediate medical attention.")
+    elif risk_score >= 4:
+        show_result("INTERMEDIARY RISK", "🟡", "Several risk factors identified. We recommend scheduling a screening with your doctor.")
+    else:
+        show_result("LOW RISK", "🟢", "Your health indicators currently align with lower-risk parameters.")
