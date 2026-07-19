@@ -774,3 +774,6 @@ import joblib
 
 # Assuming your trained Random Forest model is named 'tuned_rf_clf'
 joblib.dump(tuned_rf_clf, 'cvd_rf_model.pkl')
+
+import sklearn
+print(sklearn.__version__)
