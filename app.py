@@ -2,23 +2,23 @@ import streamlit as st
 import pandas as pd
 
 # 1. Page Configuration
-st.set_page_config(page_title="CVD Risk Assessment", page_icon="🫀", layout="centered")
+st.set_page_config(
+    page_title="CVD Risk Assessment",
+    page_icon="🫀",
+    layout="centered"
+)
 
-# 2. Modern UI CSS
-st.markdown("""
-    <style>
-    .stApp { background-color: #FFFFFF !important; }
-    div[data-testid="stWidget"] label p { font-size: 1.25rem !important; font-weight: 600 !important; color: #000000 !important; }
-    </style>
-    """, unsafe_allow_html=True)
-
-# 3. Header
+# 2. Web App UI Header
 st.title("🫀 Cardiovascular Disease Risk Assessment")
-st.caption("MIA5100Z Machine Learning Project")
+st.caption("MIA5100Z Machine Learning Project Demo")
+
+# Small, clear warning
 st.markdown("<small><i>ACADEMIC PROOF OF CONCEPT: Form inputs use everyday language.</i></small>", unsafe_allow_html=True)
+
 st.write("---")
 
-# --- INPUTS ---
+# --- SECTION 1: GENERAL INFO ---
+st.write("### 👤 Step 1: General Information")
 age = st.number_input("What is your Age?", min_value=1, max_value=120, value=25)
 sex = st.selectbox("What is your Biological Sex?", ["Male", "Female"])
 
@@ -27,12 +27,13 @@ with col_ft: ft = st.number_input("Height (ft)", min_value=3, max_value=8, value
 with col_in: inches = st.number_input("Height (in)", min_value=0, max_value=11, value=7)
 with col_w: weight_kg = st.number_input("Weight (kg)", min_value=10.0, max_value=400.0, value=70.0, step=0.1)
 
-# BMI Logic
+# BMI calculation
 height_m = ((ft * 12) + inches) * 0.0254
 bmi = weight_kg / (height_m ** 2) if height_m > 0 else 0.0
 st.write(f"**Computed BMI:** {bmi:.1f}")
 
-# BP Logic - Defined BEFORE button
+# --- SECTION 2: CLINICAL METRICS ---
+st.write("### 🩺 Step 2: Clinical Metrics")
 bp_selection = st.selectbox("Typical Blood Pressure:", [
     "Normal (Below 120/80 mmHg)",
     "Elevated (Systolic 120-129)",
@@ -40,44 +41,41 @@ bp_selection = st.selectbox("Typical Blood Pressure:", [
     "High Stage 2 (Systolic 140+ or Diastolic 90+)"
 ])
 
-if "Normal" in bp_selection: sys_bp, dia_bp = 115, 75
-elif "Elevated" in bp_selection: sys_bp, dia_bp = 125, 78
-elif "Stage 1" in bp_selection: sys_bp, dia_bp = 135, 85
-else: sys_bp, dia_bp = 150, 95
+chol_selection = st.selectbox("Typical Total Cholesterol:", [
+    "Normal (Below 200 mg/dL)",
+    "Borderline High (200–239 mg/dL)",
+    "High (240 mg/dL or above)"
+])
 
-# Other inputs
-chol_selection = st.selectbox("Typical Total Cholesterol:", ["Normal (<200)", "Borderline (200–239)", "High (240+)"])
-hdl_selection = st.selectbox("Typical HDL ('Good') Cholesterol:", ["Optimal (60+)", "Normal (40-59)", "Low (<40)"])
-sugar_selection = st.selectbox("Typical Fasting Blood Sugar:", ["Normal (<100)", "Pre-Diabetes (100–125)", "Diabetic (126+)"])
+hdl_selection = st.selectbox("Typical HDL ('Good') Cholesterol:", [
+    "Optimal (60+ mg/dL)",
+    "Normal (40-59 mg/dL)",
+    "Low (Below 40 mg/dL)"
+])
 
+sugar_selection = st.selectbox("Typical Fasting Blood Sugar:", [
+    "Normal (Below 100 mg/dL)",
+    "Pre-Diabetes (100–125 mg/dL)",
+    "Diabetic Profile (126 mg/dL or above)"
+])
+
+# --- SECTION 3: LIFESTYLE ---
+st.write("### 🚬 Step 3: Lifestyle & History")
 smoking = st.selectbox("Smoking Status:", ["Never Smoked", "Former Smoker", "Current Smoker"])
 diabetes = st.checkbox("Clinically diagnosed with Diabetes?")
 family_history = st.checkbox("Family history of heart disease?")
 
 # --- PREDICTION LOGIC ---
-if st.button("Submit Questionnaire & Calculate Risk", type="primary"):
-    risk_score = 0
-    high_risk_flag = False
+if st.button("Submit Questionnaire & Calculate Risk"):
+    # Scoring Logic
+    sys_bp = 150 if "Stage 2" in bp_selection else (135 if "Stage 1" in bp_selection else 115)
+    cholesterol = 250 if "High" in chol_selection else (220 if "Borderline" in chol_selection else 170)
+    hdl = 35 if "Low" in hdl_selection else (48 if "Normal" in hdl_selection else 65)
+    blood_sugar = 140 if "Diabetic" in sugar_selection else (110 if "Pre-Diabetes" in sugar_selection else 85)
     
-    # Red Flag Check
-    if sys_bp >= 160 or dia_bp >= 100: high_risk_flag = True
-    if "Diabetic" in sugar_selection and diabetes: high_risk_flag = True
+    risk_score = (1 if age > 40 else 0) + (2 if bmi > 25 else 0) + (2 if sys_bp > 130 else 0) + (1 if cholesterol > 200 else 0)
     
-    # Additive Scoring
-    if age > 55: risk_score += 2
-    elif age > 40: risk_score += 1
-    if bmi >= 30: risk_score += 2
-    elif bmi >= 25: risk_score += 1
-    if sys_bp >= 130 or dia_bp >= 80: risk_score += 2
-    if "High" in chol_selection: risk_score += 2
-    elif "Borderline" in chol_selection: risk_score += 1
-    if "Low" in hdl_selection: risk_score += 2
-    if "Diabetic" in sugar_selection or diabetes: risk_score += 2
-    elif "Pre-Diabetes" in sugar_selection: risk_score += 1
-    if smoking == "Current Smoker": risk_score += 2
-    if family_history: risk_score += 2
-
     st.write("---")
-    if high_risk_flag or risk_score >= 8: st.error("### Prediction: HIGH RISK 🔴")
-    elif risk_score >= 4: st.warning("### Prediction: INTERMEDIARY RISK 🟡")
-    else: st.success("### Prediction: LOW RISK 🟢")
+    if risk_score <= 3: st.success("### Prediction: LOW RISK 🟢")
+    elif risk_score <= 7: st.warning("### Prediction: INTERMEDIARY RISK 🟡")
+    else: st.error("### Prediction: HIGH RISK 🔴")
