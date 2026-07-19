@@ -1,61 +1,21 @@
 import streamlit as st
 import pandas as pd
 
-# 1. Page Configuration
+# 1. Page Configuration - Native design ensures clean UI
 st.set_page_config(
     page_title="CVD Risk Assessment",
     page_icon="🫀",
     layout="centered"
 )
 
-# 2. Modern UI CSS (Clubhouse/Airbnb aesthetic)
-st.markdown("""
-    <style>
-    /* Global white background */
-    .stApp {
-        background-color: #FFFFFF !important;
-        font-family: 'Inter', -apple-system, sans-serif;
-    }
-    
-    /* Make the warning text tiny and subtle */
-    .stWarning {
-        font-size: 0.75rem !important;
-        padding: 5px 10px !important;
-        background-color: #f8f9fa !important;
-        border: 1px solid #e9ecef !important;
-        color: #6c757d !important;
-    }
+# 2. Web App UI Header
+st.title("🫀 Cardiovascular Disease Risk Assessment")
+st.caption("MIA5100Z Machine Learning Project Demo")
 
-    /* Soft, modern input boxes */
-    .stNumberInput, .stSelectbox {
-        border-radius: 12px !important;
-        border: 1px solid #ced4da !important;
-    }
-    
-    /* Bigger, bolder question text */
-    label p {
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
-        color: #212529 !important;
-        padding-bottom: 5px !important;
-    }
-    
-    /* Clean, pill-shaped button */
-    div.stButton > button {
-        background-color: #FF385C !important; /* Airbnb-style pink/red */
-        color: white !important;
-        border-radius: 25px !important;
-        font-weight: 600 !important;
-        padding: 10px 30px !important;
-        border: none !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+# Small warning as requested
+st.markdown("<small><i>ACADEMIC PROOF OF CONCEPT: Form inputs use everyday language.</i></small>", unsafe_allow_html=True)
 
-# 3. Web App UI
-st.title("🫀 CVD Risk Assessment")
-st.warning("ACADEMIC PROOF OF CONCEPT ONLY. Form inputs use everyday language.")
-
+st.write("---")
 st.write("### 📝 Quick Health Questionnaire")
 
 # --- SECTION 1: GENERAL INFO ---
@@ -70,7 +30,7 @@ with col_w: weight_kg = st.number_input("Weight (kg)", min_value=10.0, max_value
 # BMI calculation
 height_m = ((ft * 12) + inches) * 0.0254
 bmi = weight_kg / (height_m ** 2) if height_m > 0 else 0.0
-st.info(f"💡 Computed BMI: **{bmi:.1f}**")
+st.write(f"**Computed BMI:** {bmi:.1f}")
 
 # --- SECTION 2: CLINICAL METRICS ---
 bp_selection = st.selectbox("Typical Blood Pressure:", [
@@ -104,18 +64,16 @@ diabetes = st.checkbox("Clinically diagnosed with Diabetes?")
 family_history = st.checkbox("Family history of heart disease?")
 
 # --- PREDICTION LOGIC ---
-if st.button("Submit & Calculate Risk"):
-    # (Same robust scoring logic as before)
-    # Mapping
+if st.button("Submit Questionnaire"):
+    # Scoring Logic
     sys_bp = 150 if "Stage 2" in bp_selection else (135 if "Stage 1" in bp_selection else 115)
     cholesterol = 250 if "High" in chol_selection else (220 if "Borderline" in chol_selection else 170)
     hdl = 35 if "Low" in hdl_selection else (48 if "Normal" in hdl_selection else 65)
     blood_sugar = 140 if "Diabetic" in sugar_selection else (110 if "Pre-Diabetes" in sugar_selection else 85)
     
-    # Simple score
     risk_score = (1 if age > 40 else 0) + (2 if bmi > 25 else 0) + (2 if sys_bp > 130 else 0) + (1 if cholesterol > 200 else 0)
     
-    st.divider()
+    st.write("---")
     if risk_score <= 3: st.success("### Prediction: LOW RISK 🟢")
     elif risk_score <= 7: st.warning("### Prediction: INTERMEDIARY RISK 🟡")
     else: st.error("### Prediction: HIGH RISK 🔴")
