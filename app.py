@@ -2,16 +2,20 @@ import streamlit as st
 import pandas as pd
 
 # 1. Page Configuration
-st.set_page_config(
-    page_title="CVD Risk Assessment",
-    page_icon="🫀",
-    layout="centered"
-)
+st.set_page_config(page_title="CVD Risk Assessment", page_icon="🫀", layout="centered")
 
-# 2. Web App UI Header
+# 2. Define the Pop-up Result Dialog (Defined here so it's globally available)
+@st.dialog("Assessment Result")
+def show_result(risk_label, color_emoji, explanation):
+    st.write(f"### Prediction: {risk_label} {color_emoji}")
+    st.write(explanation)
+    st.info("💡 **Recommendation:** Please consult with your family doctor to discuss these results and get a professional screening.")
+    if st.button("Close"):
+        st.rerun()
+
+# 3. Web App UI Header
 st.title("🫀 Cardiovascular Disease Risk Assessment")
 st.caption("MIA5100Z Machine Learning Project Demo")
-
 st.markdown("<small><i>ACADEMIC PROOF OF CONCEPT: Form inputs use everyday language.</i></small>", unsafe_allow_html=True)
 st.write("---")
 
@@ -52,7 +56,6 @@ diabetes = st.checkbox("Clinically diagnosed with Diabetes?")
 family_history = st.checkbox("Family history of heart disease?")
 
 # --- PREDICTION LOGIC ---
-# Added key="submit_btn" to uniquely identify this widget
 if st.button("Submit Questionnaire & Calculate Risk", type="primary", key="submit_btn"):
     risk_score = 0
     high_risk_flag = False
@@ -75,8 +78,7 @@ if st.button("Submit Questionnaire & Calculate Risk", type="primary", key="submi
     if smoking == "Current Smoker": risk_score += 2
     if family_history: risk_score += 2
 
-    st.write("---")
-# Trigger Dialog based on risk
+    # Trigger Dialog based on risk
     if high_risk_flag or risk_score >= 8:
         show_result("HIGH RISK", "🔴", "Your profile shows critical indicators that require immediate medical attention.")
     elif risk_score >= 4:
