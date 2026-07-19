@@ -12,9 +12,7 @@ st.set_page_config(
 st.title("🫀 Cardiovascular Disease Risk Assessment")
 st.caption("MIA5100Z Machine Learning Project Demo")
 
-# Small, clear warning
 st.markdown("<small><i>ACADEMIC PROOF OF CONCEPT: Form inputs use everyday language.</i></small>", unsafe_allow_html=True)
-
 st.write("---")
 
 # --- INPUTS ---
@@ -31,7 +29,7 @@ height_m = ((ft * 12) + inches) * 0.0254
 bmi = weight_kg / (height_m ** 2) if height_m > 0 else 0.0
 st.write(f"**Computed BMI:** {bmi:.1f}")
 
-# BP Logic - Defined BEFORE button
+# BP Logic
 bp_selection = st.selectbox("Typical Blood Pressure:", [
     "Normal (Below 120/80 mmHg)",
     "Elevated (Systolic 120-129)",
@@ -54,7 +52,8 @@ diabetes = st.checkbox("Clinically diagnosed with Diabetes?")
 family_history = st.checkbox("Family history of heart disease?")
 
 # --- PREDICTION LOGIC ---
-if st.button("Submit Questionnaire & Calculate Risk", type="primary"):
+# Added key="submit_btn" to uniquely identify this widget
+if st.button("Submit Questionnaire & Calculate Risk", type="primary", key="submit_btn"):
     risk_score = 0
     high_risk_flag = False
     
@@ -76,21 +75,7 @@ if st.button("Submit Questionnaire & Calculate Risk", type="primary"):
     if smoking == "Current Smoker": risk_score += 2
     if family_history: risk_score += 2
 
-# --- PREDICTION LOGIC ---
-if st.button("Submit Questionnaire & Calculate Risk", type="primary"):
-    # Scoring Logic
-    sys_bp = 150 if "Stage 2" in bp_selection else (135 if "Stage 1" in bp_selection else 115)
-    cholesterol = 250 if "High" in chol_selection else (220 if "Borderline" in chol_selection else 170)
-    hdl = 35 if "Low" in hdl_selection else (48 if "Normal" in hdl_selection else 65)
-    blood_sugar = 140 if "Diabetic" in sugar_selection else (110 if "Pre-Diabetes" in sugar_selection else 85)
-    
-    risk_score = (1 if age > 40 else 0) + (2 if bmi > 25 else 0) + (2 if sys_bp > 130 else 0) + (1 if cholesterol > 200 else 0)
-    high_risk_flag = (sys_bp >= 160 or dia_bp >= 100) or ("Diabetic" in sugar_selection and diabetes)
-    
-    # Trigger Dialog based on risk
-    if high_risk_flag or risk_score >= 8:
-        show_result("HIGH RISK", "🔴", "Your profile shows critical indicators that require immediate medical attention.")
-    elif risk_score >= 4:
-        show_result("INTERMEDIARY RISK", "🟡", "Several risk factors identified. We recommend scheduling a screening with your doctor.")
-    else:
-        show_result("LOW RISK", "🟢", "Your health indicators currently align with lower-risk parameters.")
+    st.write("---")
+    if high_risk_flag or risk_score >= 8: st.error("### Prediction: HIGH RISK 🔴")
+    elif risk_score >= 4: st.warning("### Prediction: INTERMEDIARY RISK 🟡")
+    else: st.success("### Prediction: LOW RISK 🟢")
